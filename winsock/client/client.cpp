@@ -44,6 +44,7 @@ int main() {
     while (1)
     {
         cout << "Please, enter message or 'exit' to exit: " << endl;
+        memset(buf, 0, sizeof(buf));
         string str;
         getline(cin, str);
         if (str == "exit")
@@ -60,6 +61,23 @@ int main() {
             WSACleanup();
             return 1;
         }
+
+        int bytesRecv = recv(clientSock, buf, sizeof(buf) - 1, 0);
+        if (bytesRecv > 0)
+        {
+            buf[bytesRecv] = '\0';
+            string strRecv = buf;
+            cout << "You have entered: " << strRecv << endl;
+        }
+        else if (bytesRecv == 0)
+        {
+            cout << "Connection closed by server" << endl;
+        }
+        else
+        {
+            cerr << "Recv failed: " << WSAGetLastError() << endl;
+        }
+
     }
 
 

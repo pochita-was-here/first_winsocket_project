@@ -52,16 +52,19 @@ int main() {
     }
     std::cout << "Client connected!" << std::endl;
     closesocket(listenSock);  // больше не нужен, есть clientSock
+    
+    string msg;
 
     while (1)
     {
         memset(buff, 0, sizeof(buff)); // обнуляю буфер
-        
+        msg = "";
+
         int bytesRecv = recv(clientSock, buff, sizeof(buff) - 1, 0);
         if (bytesRecv > 0)
         {
             buff[bytesRecv] = '\0'; // чтобы можно было работать как со строкой
-            string msg = buff;
+            msg = buff;
             if (strcmp(buff, "exit") == 0)
             {
                 exit(1);
@@ -81,6 +84,12 @@ int main() {
             closesocket(clientSock);
             WSACleanup();
             exit(-1);
+        }
+
+        int bytesSent = send(clientSock, msg.c_str(), (int)strlen(msg.c_str()), 0);
+        if (bytesSent == SOCKET_ERROR)
+        {
+            cerr << "Send failed: " << WSAGetLastError() << endl; 
         }
 
     }
